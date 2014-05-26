@@ -1,5 +1,5 @@
 #CZip
-##what is it?
+##What is it?
 Czip is a free test file compression software base on CSA,a little faster than bzip2,
 	 but weaker in space.
 ##How to use it?
@@ -29,4 +29,10 @@ Czip is a free test file compression software base on CSA,a little faster than b
 	}
 	```
 
-
+##Who am I?
+	My chinese full name is :
+###Chenlonggang
+	so the family name is Chen,given name is Longgang
+	My email address is:
+###chenlonggang.love@163.com
+	
