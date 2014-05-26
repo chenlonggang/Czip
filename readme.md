@@ -31,8 +31,7 @@ Czip is a free test file compression software base on CSA,a little faster than b
 
 ##Who am I?
 	My chinese full name is :
-###Chenlonggang
-	so the family name is Chen,given name is Longgang
+	Chenlonggang, so the family name is Chen,given name is Longgang
 	My email address is:
-###chenlonggang.love@163.com
+	chenlonggang.love@163.com
 	
