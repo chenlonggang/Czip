@@ -11,7 +11,7 @@ Czip is a free test file compression software base on CSA,a little faster than b
 	 step1:download or clone it
 	 step2:make
 	 step3:include CSA.h
-	 step4:g++ g++ your_program.cpp -o xx -fm.a
+	 step4:g++ g++ your_program.cpp -o xx -csa.a
 
 ###example
 	 ```cpp
@@ -19,7 +19,12 @@ Czip is a free test file compression software base on CSA,a little faster than b
 	int main()
     {
 		CSA csa;
+		//compresse file 'source_filename' to 'compressed_filename'
 		csa.Compress("source_filename","compressed_filename");
+		...
+		//decompress file compressed_filename to file source_filename1
+		// so source_filename and source_filename1 are same
+		csa.Decompress("compressed_filename","source_filename1");
 		return 0;
 	}
 	```
