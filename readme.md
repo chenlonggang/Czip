@@ -1,7 +1,8 @@
 #CZip
 ##What is it?
 Czip is a free test file compression software base on CSA,a little faster than bzip2,
-	 but weaker in space.
+	 but weaker in space.It mix pure-gamma and rl-gamma coding methods together,So it is 
+	 hybrid,data-aware and self-adapting.
 ##How to use it?
 ###just for fun
 	 step1:download or clone it
