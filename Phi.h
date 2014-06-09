@@ -1,3 +1,18 @@
+/*============================================
+# Filename: Phi.h
+# Ver 1.0 2014-06-09
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description: 
+The Phi Array class,the main point of the project.
+the array increase chunk by chunk,so we save the gap 
+between Phi[i+1] and Phi[i],and using gamma coding to 
+store the gap.
+=============================================*/
 #ifndef _PHI
 #define _PHI
 #include"BasicClass.h"

@@ -1,3 +1,15 @@
+/*============================================
+# Filename: CSA_chunk.h
+# Ver 1.0 2014-06-09
+# Copyright (C) 2014 ChenLonggang (chenlonggang.love@163.com)
+#
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 or later of the License.
+#
+# Description: 
+it's prepare for a compressing and decompress a piece of file
+=============================================*/
 #ifndef _CSA_CHUNK
 #define _CSA_CHUNK
 #include"BasicClass.h"
