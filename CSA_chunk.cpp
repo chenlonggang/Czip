@@ -10,7 +10,7 @@ the Free Software Foundation; either version 2 or later of the License.
 # Description: 
 =============================================*/
 #include"CSA_chunk.h"
-#include"ds_ssort.h"
+#include"divsufsort.h"
 #include"parmaters.h"
 #include <unistd.h> 
 #include<semaphore.h>
@@ -29,7 +29,9 @@ void CSA_chunk::Compress(uchar *T,i32 len)
 	this->alphabetsize=0;
 	statics(T);
 	i32 * SA=new i32[n];
-	ds_ssort(T,SA,len);
+	
+	//ds_ssort(T,SA,len);
+	divsufsort(T,SA,len);
 
 	parmaters p={alphabetsize,n,L,start,T[n-1],SA,T,code};
 	CreateSupportStructer(&p);

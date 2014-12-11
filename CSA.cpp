@@ -10,7 +10,7 @@ the Free Software Foundation; either version 2 or later of the License.
 # Description: 
 =============================================*/
 #include"CSA.h"
-#include"ds_ssort.h"
+#include"divsufsort.h"
 #include<cstdlib>
 #include<cmath>
 CSA::CSA(i32 bits)
@@ -43,7 +43,6 @@ i32 CSA::Compress(const char *source,const char * destation)
 		chunk_num=1;
 
 	i32 len=chunk_size;
-	i32 overshoot=init_ds_ssort(500,2000);
 	uchar *T=NULL;
 
 	savekit s(destation);
@@ -55,7 +54,7 @@ i32 CSA::Compress(const char *source,const char * destation)
 	i32 readed=0;
 	for(i32 i=0;i<chunk_num-1;i++)
 	{
-		T=new uchar[len+overshoot];
+		T=new uchar[len];
 		readed=fread(T,sizeof(uchar),len,fp);
 		if(readed!=len)
 		{
@@ -70,7 +69,7 @@ i32 CSA::Compress(const char *source,const char * destation)
 	}
 
 	len=n-(chunk_num-1)*chunk_size;
-	T=new uchar[len+overshoot];
+	T=new uchar[len];
 	readed=fread(T,sizeof(uchar),len,fp);
 	if(readed!=len)
 	{
