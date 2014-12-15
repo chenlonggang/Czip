@@ -12,5 +12,5 @@ main.o:main.cpp  CSA.h
 clean:
 	rm *.a  *.o
 div:
-	cp divsufsort/lib/libdivsufsort.a .;ar x libdivsufsort.a;rm libdivsufsort.a 
+	make -C ./divsufsort/ ;cp divsufsort/libdivsufsort.a .;ar x libdivsufsort.a;rm libdivsufsort.a 
 
