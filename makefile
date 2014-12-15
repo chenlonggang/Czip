@@ -10,7 +10,7 @@ csa.a: CSA.o CSA_chunk.o Phi.o savekit.o loadkit.o divsufsort.o sssort.o trsort.
 main.o:main.cpp  CSA.h
 	g++ -c main.cpp 
 clean:
-	rm *.a  *.o
+	rm *.a  *.o ./divsufsort/*.o ./divsufsort/*.a my_csa
 div:
 	make -C ./divsufsort/ ;cp divsufsort/libdivsufsort.a .;ar x libdivsufsort.a;rm libdivsufsort.a 
 
