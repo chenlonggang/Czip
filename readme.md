@@ -30,7 +30,11 @@ Czip is a free test file compression software base on CSA,a little faster than b
 	}
 	```
 
-##Who am I?
-	My chinese  name is :  Chenlonggang, 
-	My email address is :  chenlonggang.love@163.com
+##Changelog  
+	2014.12.23: fix bugs about mem-leak.  
+	2014.12.23: for each chunk,we can use multi-thread,each one decode part of  
+	            the chunk, but it does not help a lot,as the thread is shortlife.  
+				the cost of creating/burning the thread will counteract the benefit  
+				of multi-thread.So the thread_num is 1 by default now.  
+	
 	
