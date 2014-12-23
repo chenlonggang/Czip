@@ -28,15 +28,11 @@ Phi::Phi(parmaters *csa)
 	this->n=csa->n;
 	this->b=csa->L;
 	this->index=0;
-
-//	time_t t1=clock();
 	this->InitionalTables();
-//	time_t t2=clock();
-//	cout<<"Init"<<t2-t1<<endl;
-
 	this->Coding(csa);
 	Test();
 	delete [] phivalue;
+	phivalue=NULL;
 }
 
 void Phi::Test()
@@ -48,6 +44,8 @@ void Phi::Test()
 			k++;
 	if(k!=0)
 		cerr<<"Phi decoding is wrong"<<endl;
+	delete [] phi;
+	phi=NULL;
 }
 
 Phi::~Phi()
@@ -163,111 +161,20 @@ u64 popcount(u32 x)
 
 void Phi::Coding(parmaters *csa)
 {
-	/*开始计算Phi数组*/
 	Computephi(csa);
-
-	/*有一种编码方法，对于小的gap使用常规的gamma编码，对于大的gap使用特殊的编码方案，具体如下：2014.2.21*/
-	/*设又一gapx，
-	  if log(x) < 10 : use the original gamma coding
-	  if log(x) >=10 : use coding like this:0000000000,foloweded by the unary syle of log(log(x)-10),and the binary style of log(x)-10,and the binary of x without the 
-	                   significant bit.
-	该形式的编码方案的理论推到看着比较漂亮，但肯定是个绣花枕头，这里统计测试的10几个文件，统计pure gamma coding 和 this ugly coding 的位长。
-	 */
-/*
-	double pure_gamma=0;
-	double ugly_gamma=0;
-	int gap=0;
-	double par=20.0;
-	for(int i=1;i<n;i++)
-	{
-		gap=phivalue[i]-phivalue[i-1];
-		if(gap<0)
-			gap=gap+n;
-		//pure gamma coding's length
-		pure_gamma=pure_gamma+blogsize(gap)*2.0-1.0;
-
-		//the ugly gamma coding's length 
-		if( (log10(gap)/log10(2.0))>=par )
-		{
-			//cout<<"fuck: "<<gap<<endl;
-			ugly_gamma=ugly_gamma+par+ceil(log10(ceil(log10(gap)/log10(2.0))-par)/log10(2.0))+1.0+blogsize(ceil(log10(gap)/log10(2.0))-par)+blogsize(gap)-1.0;
-		}
-		else
-			ugly_gamma=ugly_gamma+blogsize(gap)*2.0-1;
-	}
-	cout<<"	pure gamma coding's length: "<<pure_gamma/(n*1.0)<<endl;
-	cout<<"	ugly gamma coding's length: "<<ugly_gamma/(n*1.0)<<endl;
-
-*/
-
-
-
-	/*确定编码方式和总空间大小，编码类型存储到bytes中，每b个gap一组*/
-	/*编码空间总大小，分配并初始化sequence*/
 	i32 * types=Codingstyle_space();
-	
 	/*编码*/
 	i32 x=(n/b)+1;
 	i32 pre=0;
 	index=0;
 	for(i32 i=0;i<x;i++)
 	{
-		//gamma编码
-		if(types[i]==0)
+		if(types[i]==0)//gamma
 			Gamma_block_coding(i*b,min(b,n-i*b),pre,phivalue);
-		//rl编码
-		else
+		else//rlg
 			RL_block_coding(i*b,min(b,n-i*b),pre,phivalue);
 	}
-	
 	delete [] types;
-
-
-	/*计算编码后的0,1串中1的比例，看是否悬殊，是否可以采用RRR来压缩S结构.2013.12.27*/
-	/*计算发现：不论是纯gamma或纯RL或结合两者，1在编码后的串中所占比例在35%～63%之间
-	  0,1分布基本均匀，RRR只有在1de比例比较低，比如5%时才有明显的压缩效果.故RRR的企图落空*/
-/*
-	u64 ones=0;
-	for(int i=0;i<lenofsequence;i++)
-		ones=ones+popcount(sequence[i]);
-	cout<<"1:"<<ones/(lenofsequence*32.0)<<endl;
-*/
-
-
-/*编码之后的0,1串，每8bits当做一个symbol，计算这个序列的熵，结果为7.6bits左右，8bits变为7.6,没有效果，
-  这是因为编码后的0,1串的分布比较均匀，不存在频谱失衡的情况。虽然不用RL时，有大量的1，这样编码后的0,1串
-  中就有大量连续的1,但是这点RL也可以利用，而且其他分组合的分布布还是基本均匀的，huffman的效果还不如结合RL+gamma编码.
-  所以0,1层面的huffman编码作罢,2013.12.18*/
-/*
-	u32 * count=new u32[256];
-	memset(count,0,256*4);
-	u32 value=0;
-	for(i32 i=0;i<lenofsequence;i++)
-	{
-		value=sequence[i]&(0xff);
-		count[value]++;
-		value=(sequence[i]>>8)&0xff;
-		count[value]++;
-		value=(sequence[i]>>16)&0xff;
-		count[value]++;
-		value=(sequence[i]>>24)&0xff;
-		count[value]++;
-	
-	}
-
-
-	double nums=lenofsequence*4.0;
-	double h=0.0;
-	for(int i=0;i<256 && count[i]!=0;i++)
-	{
-		h=h+(count[i]/nums)*(log(nums/count[i])/log(2.0));
-	}
-	cout<<h<<endl;
-	delete [] count;
-
-*/
-
-
 }
 
 void Phi::Computephi(parmaters *csa)
@@ -293,53 +200,9 @@ void Phi::Computephi(parmaters *csa)
 		 phivalue[temp [csa->code [c]]++]=i;
 	 }
 	 phivalue[last]=h;
-	 delete [] csa->SA;
-	 delete [] csa->T;
-	 csa->SA=NULL;
-	 csa->T=NULL;
 	 delete [] temp;
-
-/*----------------------------------------------------------------------------------------------*/
-
-/*gap序列的熵可以在gap级别熵衡量huffman编码的效果，huffman编码的效果略大于熵。
- 结果显示纯粹的gamma或RL的结果都基本比熵大，但是结合RL+gamma的编码方式，就像本
- 程序做的，效果普遍比huffman好，所以在gap层面的huffman编码作罢.2013.12.20*/
-
-/*计算gap序列的熵*/
-/*
-	 i32 * count=new i32[n];
-	 memset(count,0,n*4);
-	 i32 gap=0;
-	 i32 pre=0;
-	 for(i32 i=0;i<n;i++)
-	 {
-		 gap=phivalue[i]-pre;
-		 if(gap<0)
-			 gap=gap+n;
-		 count[gap]++;
-		 pre=phivalue[i];
-	 }
-	 double hh=0;
-	 double p=0.0;
-	 for(i32 i=0;i<n;i++)
-	 {
-		 if(count[i]!=0)
-		 {
-			 p=count[i]/(n*1.0);
-			 hh=hh+p*(log(1/p)/log(2.0));
-		 }
-	 }
-
-	 cout<<"gap序列的熵:"<<hh<<endl;
-	 delete [] count ;
-*/
 }
 
-/*开始觉得2会间断连续的1,会影响RL的效果，但实际上，把2“当成”1之后，
- 压缩效果不明显，bible又2.5降到2.32,xml又1.21降到1.14,和没降一样，
- 反而带来表示2的0,1串负担，这是应为2的比例相当低，bible中为7.12%左右，
- xml中为2.9%左右。
- 故将2“变为”1,加强RL效果的想法作罢.2013.12.25*/
 i32 *Phi::Codingstyle_space()
 {
 	i32 x=(n/b)+1;
@@ -350,29 +213,17 @@ i32 *Phi::Codingstyle_space()
 	i32 totle_len=0;
 	i32 pre=0;
 	i32 gap=0;
-
-	i32 ones=0;
-
-
-	for(int i=0;i<x;i++)
-	{
+	for(int i=0;i<x;i++){
 		runs=0;
 		len_gamma=0;
 		len_rl=0;
-		for(int j=i*b;j<(i+1)*b && j<n;j++)
-		{
+		for(int j=i*b;j<(i+1)*b && j<n;j++){
 			gap=phivalue[j]-pre;
 			if(gap<0)
 				gap=gap+n;
-			
-			if(gap==1)
-				ones++;
-			
 			len_gamma=len_gamma+blogsize(gap)*2-1;
-			if(gap>1)
-			{
-				if(runs>0)
-				{
+			if(gap>1){
+				if(runs>0){
 					len_rl=len_rl+blogsize(2*runs)*2-1;
 					runs=0;
 				}
@@ -388,27 +239,18 @@ i32 *Phi::Codingstyle_space()
 		if(runs>0)
 			len_rl=len_rl+blogsize(2*runs)*2-1;
 		
-		if(len_rl>len_gamma)
-		{
+		if(len_rl>len_gamma){
 			types[i]=0;//gamma编码
 			totle_len=totle_len+len_gamma+methodwidth;
 		}
-	
-		else
-		{
+		else{
 			types[i]=1;//rl编码
 			totle_len=totle_len+len_rl+methodwidth;
 		}
-
 	}
-	this->lenofsequence=totle_len/32+1;
+	this->lenofsequence=totle_len/32+2;
 	this->sequence=new u32[lenofsequence];
 	memset(sequence,0,4*lenofsequence);
-
-	//cout<<"1 ratio:"<<ones/(n*1.0)<<endl;
-
-	//cout<<"Sequence序列:"<<totle_len/(n*1.0)<<endl;
-
 	return types;
 }
 
@@ -418,8 +260,7 @@ void Phi::Gamma_block_coding(i32 start,i32 len,i32 & pre,i32 * phiarray)
 {
 	Setbits(0,methodwidth);
 	i32 gap=0;
-	for(i32 i=0;i<len;i++)
-	{
+	for(i32 i=0;i<len;i++){
 		gap=phiarray[start+i]-pre;
 		if(gap<0)
 			gap=gap+n;
@@ -528,6 +369,7 @@ void Phi::InitionalTables()
 			R[j]=D-1-i;
 	R[0]=D;
 }
+
 i32 Phi::Save(savekit &s)
 {
 	s.writei32(n);
@@ -538,7 +380,6 @@ i32 Phi::Save(savekit &s)
 	//sequences
 	s.writei32(lenofsequence);
 	s.writeu32array(sequence,lenofsequence);
-
 	return 1;
 }
 
@@ -564,22 +405,4 @@ i32 Phi::Size()
 {
 	return lenofsequence*4+20;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

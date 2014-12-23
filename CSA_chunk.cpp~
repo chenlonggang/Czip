@@ -19,7 +19,6 @@ the Free Software Foundation; either version 2 or later of the License.
 CSA_chunk::CSA_chunk()
 {
 }
-
 void CSA_chunk::Compress(uchar *T,i32 len)
 {
 	this->n=len;
@@ -31,11 +30,14 @@ void CSA_chunk::Compress(uchar *T,i32 len)
 	statics(T);
 	i32 * SA=new i32[n];
 	
+	//ds_ssort(T,SA,len);
 	divsufsort(T,SA,len);
+
 	parmaters p={alphabetsize,n,L,start,T[n-1],SA,T,code};
 	CreateSupportStructer(&p);
+	delete [] T;
 	delete [] SA;
-	SA=NULL;
+
 }
 
 CSA_chunk::~CSA_chunk()
@@ -45,9 +47,10 @@ CSA_chunk::~CSA_chunk()
 	delete [] code;
 	delete [] incode;
 	delete [] start;
-	delete Phi0;	
-}
 
+	delete Phi0;
+	
+}
 i32 CSA_chunk::Load(loadkit &s)
 {
 	s.loadi32(this->n);
@@ -77,7 +80,6 @@ i32 CSA_chunk::Load(loadkit &s)
 	Phi0->Load(s);
 	return 0;
 }
-
 i32 CSA_chunk::Save(savekit &s)
 {
 	s.writei32(n);

@@ -19,7 +19,7 @@ the Free Software Foundation; either version 2 or later of the License.
 class CSA
 {
 	public:
-		CSA(i32 bits=27);//the default chunk_size=(1<<27)=128MB.
+		CSA(i32 bits=20);//the default chunk_size=(1<<20)=1MB.
 		i32 Compress(const char * source,const char * destation);
 		i32 Decompress(const char * source,const char * destation);
 	private:

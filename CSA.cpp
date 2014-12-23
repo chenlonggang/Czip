@@ -34,14 +34,12 @@ i32 CSA::Compress(const char *source,const char * destation)
 		cerr<<"Error fopen. Be sure the file is available"<<endl;
 		exit(0);
 	}
-
 	fseek(fp,0,SEEK_END);
 	n=ftell(fp);
 	fseek(fp,0,SEEK_SET);
 	chunk_num=round((1.0*n)/chunk_size);
 	if(chunk_num==0)
 		chunk_num=1;
-
 	i32 len=chunk_size;
 	uchar *T=NULL;
 
@@ -50,11 +48,10 @@ i32 CSA::Compress(const char *source,const char * destation)
 	s.writei32(n);
 	s.writei32(chunk_num);
 
-
 	i32 readed=0;
 	for(i32 i=0;i<chunk_num-1;i++)
 	{
-		T=new uchar[len];
+		T=new uchar[len+1];
 		readed=fread(T,sizeof(uchar),len,fp);
 		if(readed!=len)
 		{
@@ -66,27 +63,30 @@ i32 CSA::Compress(const char *source,const char * destation)
 		csa->Save(s);
 		delete csa;
 		csa=NULL;
+		delete [] T;
+		T=NULL;
 	}
-
+	
 	len=n-(chunk_num-1)*chunk_size;
-	T=new uchar[len];
+	T=new uchar[len+1];
 	readed=fread(T,sizeof(uchar),len,fp);
 	if(readed!=len)
 	{
 		cerr<<"fread error"<<endl;
 		exit(0);
 	}
-
-
 	csa=new CSA_chunk();
 	csa->Compress(T,len);
 	csa->Save(s);
 	delete csa;
 	csa=NULL;
+	delete [] T;
+	T=NULL;
 	fclose(fp);
 	s.close();
 	return 0;
 }
+
 i32 CSA::Decompress(const char *source,const char *destation)
 {
 	loadkit s(source);
