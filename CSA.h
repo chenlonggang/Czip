@@ -16,8 +16,7 @@ the Free Software Foundation; either version 2 or later of the License.
 #ifndef _CSA
 #define _CSA
 #include"CSA_chunk.h"
-class CSA
-{
+class CSA{
 	public:
 		CSA(i32 bits=20);//the default chunk_size=(1<<20)=1MB.
 		i32 Compress(const char * source,const char * destation);

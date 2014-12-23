@@ -13,10 +13,8 @@ the Free Software Foundation; either version 2 or later of the License.
 #include"divsufsort.h"
 #include<cstdlib>
 #include<cmath>
-CSA::CSA(i32 bits)
-{
-	if((bits>31)|| (bits<0))
-	{
+CSA::CSA(i32 bits){
+	if((bits>31)|| (bits<0)){
 		cerr<<"Error bits.the wanted is [1,30]"<<endl;
 		exit(0);
 	}
@@ -26,11 +24,9 @@ CSA::CSA(i32 bits)
 	this->n=0;
 }
 
-i32 CSA::Compress(const char *source,const char * destation)
-{
+i32 CSA::Compress(const char *source,const char * destation){
 	FILE *fp=fopen(source,"r+");
-	if(fp==NULL)
-	{
+	if(fp==NULL){
 		cerr<<"Error fopen. Be sure the file is available"<<endl;
 		exit(0);
 	}
@@ -41,7 +37,8 @@ i32 CSA::Compress(const char *source,const char * destation)
 	if(chunk_num==0)
 		chunk_num=1;
 	i32 len=chunk_size;
-	uchar *T=NULL;
+	
+	uchar *T=new uchar[len+1];
 
 	savekit s(destation);
 	s.writeu64(198809102510);
@@ -49,12 +46,10 @@ i32 CSA::Compress(const char *source,const char * destation)
 	s.writei32(chunk_num);
 
 	i32 readed=0;
-	for(i32 i=0;i<chunk_num-1;i++)
-	{
-		T=new uchar[len+1];
+	for(i32 i=0;i<chunk_num-1;i++){
+		memset(T,0,sizeof(uchar)*(len+1));
 		readed=fread(T,sizeof(uchar),len,fp);
-		if(readed!=len)
-		{
+		if(readed!=len){
 			cerr<<"Fread error"<<endl;
 			exit(0);
 		}
@@ -63,15 +58,12 @@ i32 CSA::Compress(const char *source,const char * destation)
 		csa->Save(s);
 		delete csa;
 		csa=NULL;
-		delete [] T;
-		T=NULL;
 	}
 	
+	memset(T,0,sizeof(uchar)*(len+1));
 	len=n-(chunk_num-1)*chunk_size;
-	T=new uchar[len+1];
 	readed=fread(T,sizeof(uchar),len,fp);
-	if(readed!=len)
-	{
+	if(readed!=len){
 		cerr<<"fread error"<<endl;
 		exit(0);
 	}
@@ -87,14 +79,12 @@ i32 CSA::Compress(const char *source,const char * destation)
 	return 0;
 }
 
-i32 CSA::Decompress(const char *source,const char *destation)
-{
+i32 CSA::Decompress(const char *source,const char *destation){
 	loadkit s(source);
 	savekit d(destation);
 	u64 magicnum;
 	s.loadu64(magicnum);
-	if(magicnum!=198809102510)
-	{
+	if(magicnum!=198809102510){
 		cerr<<"Not a csa file"<<endl;
 		s.close();
 		d.close();
@@ -104,8 +94,7 @@ i32 CSA::Decompress(const char *source,const char *destation)
 	s.loadi32(this->chunk_num);
 	i32 len=0;
 	
-	for(int i=0;i<chunk_num;i++)
-	{
+	for(int i=0;i<chunk_num;i++){
 		csa=new CSA_chunk();
 		csa->Load(s);
 		len=csa->GetN();
@@ -120,5 +109,3 @@ i32 CSA::Decompress(const char *source,const char *destation)
 	d.close();
 	return 0;
 }
-
-

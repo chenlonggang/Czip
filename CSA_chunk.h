@@ -12,10 +12,10 @@ it's prepare for a compressing and decompress a piece of file
 =============================================*/
 #ifndef _CSA_CHUNK
 #define _CSA_CHUNK
+#include<string.h>
 #include"BasicClass.h"
 #include"Phi.h"
-class CSA_chunk
-{
+class CSA_chunk{
 	public:
 		CSA_chunk();//construct a shell object,holds nothing,then the Load will fill it,using something from a csa file.
 		~CSA_chunk();
