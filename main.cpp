@@ -10,8 +10,7 @@ void helpdecompress();
 void splitcommand(string command,string result[]);
 
 int main(int argc, char* argv[])
-{ 
-	
+{ 	
 	usage();
 	string command;
 	string  result[4];
