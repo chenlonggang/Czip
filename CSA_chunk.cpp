@@ -8,6 +8,12 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 or later of the License.
 #
 # Description: 
+At the begin, I think we can use multi-pthread,each one decode part of 
+the chunk, but the result is embarrassed,multi-pthread does not help 
+much.why?
+when we use multi-pthread,we must think the cost of creating/burning
+the thread and the benefit it can give us. That means if the thread is
+shortlife, multi-pthread may not be very suited.
 =============================================*/
 #include"CSA_chunk.h"
 #include"divsufsort.h"
@@ -21,7 +27,7 @@ CSA_chunk::CSA_chunk(){}
 void CSA_chunk::Compress(uchar *T,i32 len){
 	this->n=len;
 	this->L=1024;
-	this->thread_num=2;
+	this->thread_num=1;
 	this->code=new i32[256];
 	memset(code,0,256*4);
 	this->alphabetsize=0;
