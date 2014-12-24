@@ -33,21 +33,20 @@ i32 CSA::Compress(const char *source,const char * destation){
 	fseek(fp,0,SEEK_END);
 	n=ftell(fp);
 	fseek(fp,0,SEEK_SET);
-	chunk_num=round((1.0*n)/chunk_size);
-	if(chunk_num==0)
-		chunk_num=1;
-	i32 len=chunk_size;
-	
-	uchar *T=new uchar[len+1];
-
+	chunk_num=n/chunk_size;
+	if(n%chunk_size!=0)
+		chunk_num++;
+	i32 len=0;
+	uchar *T=new uchar[chunk_size+1];
 	savekit s(destation);
 	s.writeu64(198809102510);
 	s.writei32(n);
 	s.writei32(chunk_num);
 
 	i32 readed=0;
-	for(i32 i=0;i<chunk_num-1;i++){
-		memset(T,0,sizeof(uchar)*(len+1));
+	for(i32 i=0;i<chunk_num;i++){
+		memset(T,0,sizeof(uchar)*(chunk_size+1));
+		len=min(chunk_size,n-i*chunk_size);
 		readed=fread(T,sizeof(uchar),len,fp);
 		if(readed!=len){
 			cerr<<"Fread error"<<endl;
@@ -59,19 +58,6 @@ i32 CSA::Compress(const char *source,const char * destation){
 		delete csa;
 		csa=NULL;
 	}
-	
-	memset(T,0,sizeof(uchar)*(len+1));
-	len=n-(chunk_num-1)*chunk_size;
-	readed=fread(T,sizeof(uchar),len,fp);
-	if(readed!=len){
-		cerr<<"fread error"<<endl;
-		exit(0);
-	}
-	csa=new CSA_chunk();
-	csa->Compress(T,len);
-	csa->Save(s);
-	delete csa;
-	csa=NULL;
 	delete [] T;
 	T=NULL;
 	fclose(fp);
@@ -93,17 +79,18 @@ i32 CSA::Decompress(const char *source,const char *destation){
 	s.loadi32(this->n);
 	s.loadi32(this->chunk_num);
 	i32 len=0;
-	
+	uchar * T=new uchar[chunk_size+1];
 	for(int i=0;i<chunk_num;i++){
 		csa=new CSA_chunk();
 		csa->Load(s);
 		len=csa->GetN();
-		uchar * T=new uchar[len];
+		memset(T,0,sizeof(uchar)*(chunk_size+1));
 		csa->Decompress(T);
 		d.writebytes(T,len);
-		delete [] T;
 		delete csa;
 	}
+	delete [] T;
+	T=NULL;
 	csa=NULL;
 	s.close();
 	d.close();
