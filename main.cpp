@@ -59,23 +59,7 @@ int main(int argc, char* argv[])
 		else
 			usage();
 	}
-
-
 	return 0;
-	/*
-	ifstream source("path.txt");
-	char sourcefile[100];
-	int filesnum=atoi(argv[1]);
-	int k=0;
-	for(k=0;k<filesnum;k++)
-	{
-		source.getline(sourcefile,200);
-		cout<<"file name :"<<sourcefile<<endl;
-		CSA csa(28);
-		csa.Compress(sourcefile,"result.csa");
-	}
-	return 0;
-*/
 }
 
 
